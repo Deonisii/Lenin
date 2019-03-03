@@ -2,6 +2,7 @@ import os
 import time
 import re
 from slackclient import SlackClient
+from lenin.action import do_action, ping_action
 
 print('Hello World!')
 is_good_env = os.environ['LENIN_PROJECT']
@@ -16,7 +17,10 @@ starterbot_id = None
 
 # constants
 RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
-EXAMPLE_COMMAND = "do"
+COMMAND = {
+    'do' : do_action,
+    'ping': ping_action
+}
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 
 def parse_bot_commands(slack_events):
@@ -46,13 +50,15 @@ def handle_command(command, channel):
         Executes bot command if the command is known
     """
     # Default response is help text for the user
-    default_response = "Not sure what you mean. Try *{}*.".format(EXAMPLE_COMMAND)
+    default_response = "Not sure what you mean. Try *{}*.".format(COMMAND.keys())
 
     # Finds and executes the given command, filling in response
     response = None
     # This is where you start to implement more commands!
-    if command.startswith(EXAMPLE_COMMAND):
-        response = "Sure...write some more code then I can do that!"
+    worlds = command.split()
+    if worlds and worlds[0] in COMMAND:
+        action = worlds[0]
+        response = COMMAND[action](worlds[1:])
 
     # Sends the response back to the channel
     slack_client.api_call(

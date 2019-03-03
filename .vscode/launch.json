@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "main",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\main.py",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}\\.venv\\Scripts\\activate.bat"
+        },
+        {
             "name": "Current File",
             "type": "python",
             "request": "launch",
