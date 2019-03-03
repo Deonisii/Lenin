@@ -2,7 +2,7 @@ import os
 import time
 import re
 from slackclient import SlackClient
-from lenin.action import do_action, ping_action
+from lenin.action import do_action, ping_action, eval_action
 
 print('Hello World!')
 is_good_env = os.environ['LENIN_PROJECT']
@@ -19,7 +19,8 @@ starterbot_id = None
 RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
 COMMAND = {
     'do' : do_action,
-    'ping': ping_action
+    'ping': ping_action,
+    'eval': eval_action
 }
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 
@@ -43,14 +44,14 @@ def parse_direct_mention(message_text):
     """
     matches = re.search(MENTION_REGEX, message_text)
     # the first group contains the username, the second group contains the remaining message
-    return (matches.group(1), matches.group(2).strip()) if matches else (None, None)
+    return (matches.group(1), matches.group(2).strip()) if matches else (starterbot_id, message_text)
 
 def handle_command(command, channel):
     """
         Executes bot command if the command is known
     """
     # Default response is help text for the user
-    default_response = "Not sure what you mean. Try *{}*.".format(COMMAND.keys())
+    default_response = "Not sure what you mean. Try *{}*.".format(list(COMMAND.keys()))
 
     # Finds and executes the given command, filling in response
     response = None
