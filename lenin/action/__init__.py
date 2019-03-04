@@ -8,3 +8,9 @@ def ping_action(_: list) -> str:
 
 def eval_action(args: list) -> str:
     return eval(" ".join(args))
+
+ALL = {
+    'do' : do_action,
+    'ping': ping_action,
+    'eval': eval_action
+}

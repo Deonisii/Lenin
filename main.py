@@ -2,11 +2,12 @@ import os
 import time
 import re
 from slackclient import SlackClient
-from lenin.action import do_action, ping_action, eval_action
+from lenin.action import ALL as COMMAND
 
 print('Hello World!')
-is_good_env = os.environ['LENIN_PROJECT']
-assert is_good_env
+is_good_env = os.getenv('LENIN_PROJECT', None)
+if is_good_env is None:
+    raise EnvironmentError('Please define environment variables:\n\tLENIN_PROJECT\n\tBOT_ACCESS_TOKEN\n\tBOT_USER_ACCESS_TOKEN')
 print("value BOT_ACCESS_TOKEN={}".format(os.environ['BOT_ACCESS_TOKEN']))
 print("value BOT_USER_ACCESS_TOKEN={}".format(os.environ['BOT_USER_ACCESS_TOKEN']))
 
@@ -17,11 +18,6 @@ starterbot_id = None
 
 # constants
 RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
-COMMAND = {
-    'do' : do_action,
-    'ping': ping_action,
-    'eval': eval_action
-}
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 
 def parse_bot_commands(slack_events):
