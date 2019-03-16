@@ -2,9 +2,8 @@ import os
 import time
 import re
 from slackclient import SlackClient
-from lenin.action import do_action, ping_action
+from lenin.action import do_action, ping_action, hello_action
 
-print('Hello World!')
 is_good_env = os.environ['LENIN_PROJECT']
 assert is_good_env
 print("value BOT_ACCESS_TOKEN={}".format(os.environ['BOT_ACCESS_TOKEN']))
@@ -16,12 +15,14 @@ slack_client = SlackClient(os.environ.get('BOT_USER_ACCESS_TOKEN'))
 starterbot_id = None
 
 # constants
-RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
+RTM_READ_DELAY = 1  # 1 second delay between reading from RTM
 COMMAND = {
-    'do' : do_action,
-    'ping': ping_action
+    'do': do_action,
+    'ping': ping_action,
+    'hello': hello_action
 }
-MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
+MENTION_REGEX = '^<@([WU][0-9A-Z]+)>\s*(.*)'
+
 
 def parse_bot_commands(slack_events):
     """
@@ -30,20 +31,28 @@ def parse_bot_commands(slack_events):
         If its not found, then this function returns None, None.
     """
     for event in slack_events:
-        if event["type"] == "message" and not "subtype" in event:
-            user_id, message = parse_direct_mention(event["text"])
-            if user_id == starterbot_id:
+        if event["type"] == "message" and "subtype" not in event:
+            user_ids, message = parse_direct_mention(event["text"])
+            if user_ids and starterbot_id in user_ids:
                 return message, event["channel"]
     return None, None
+
 
 def parse_direct_mention(message_text):
     """
         Finds a direct mention (a mention that is at the beginning) in message text
-        and returns the user ID which was mentioned. If there is no direct mention, returns None
+        and returns the user ID which was mentioned. If there is no direct mention,
+        returns None
     """
+    user_ids = []
+    matches = re.search(MENTION_REGEX, message_text)
+    while matches:    
+        user_id, message_text = matches.groups()
+        user_ids.append(user_id)
     matches = re.search(MENTION_REGEX, message_text)
     # the first group contains the username, the second group contains the remaining message
-    return (matches.group(1), matches.group(2).strip()) if matches else (None, None)
+    return (user_ids, message_text.strip()) if user_ids else (None, None)
+
 
 def handle_command(command, channel):
     """
@@ -67,6 +76,7 @@ def handle_command(command, channel):
         text=response or default_response
     )
 
+
 if __name__ == "__main__":
     if slack_client.rtm_connect(with_team_state=False):
         print("Starter Bot connected and running!")
@@ -79,5 +89,3 @@ if __name__ == "__main__":
             time.sleep(RTM_READ_DELAY)
     else:
         print("Connection failed. Exception traceback printed above.")
-
-
