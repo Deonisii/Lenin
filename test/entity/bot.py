@@ -2,13 +2,14 @@ from slackclient import SlackClient
 import time
 import os
 
+WAIT_TIME = 1
 
 class Bot(object):
     # Bot User OAuth Access Token
-    SLACK_BOT_TOKEN = os.getenv('BOT_USER_ACCESS_TOKEN', None)
+    SLACK_BOT_TOKEN = os.getenv('BOT_ACCESS_TOKEN', None)
     TEST_BOT_NAME = os.getenv('TEST_BOT_NAME', '@marx')
     TEST_GROUP = '#test_bots'
-    TIMEOUT = 5
+    TIMEOUT = 10*60
 
     def __init__(self, bot_name=TEST_BOT_NAME):
         self.sc = SlackClient(self.SLACK_BOT_TOKEN)
@@ -25,13 +26,12 @@ class Bot(object):
         assert res['ok']
         messages = None
         init_time = time.time()
-        while not messages:
-            # time.sleep(1)
+        while True:
+            time.sleep(WAIT_TIME)
             answer = self.sc.api_call('conversations.history', channel=res['channel'], oldest=res['ts'])
             assert answer['ok']
             messages = answer['messages']
+            if messages:
+                return messages[0]['text']
             if time.time() - init_time > self.TIMEOUT:
                 raise TimeoutError()
-
-        result_text = messages[0]['text']
-        return result_text

@@ -28,7 +28,7 @@ def parse_bot_commands(slack_events):
         If its not found, then this function returns None, None.
     """
     for event in slack_events:
-        if event["type"] == "message" and "subtype" not in event:
+        if event["type"] == "message":  #  and "subtype" not in event
             user_ids, message = parse_direct_mention(event["text"])
             if len(user_ids) == 0 or starter_bot_id in user_ids:
                 return message, event["channel"]
