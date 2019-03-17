@@ -1,24 +1,25 @@
 from slackclient import SlackClient
 import time
-from torch.logger import log
+import os
 
 
 class Bot(object):
     # Bot User OAuth Access Token
-    SLACK_BOT_TOKEN = 'xoxp-2177870734-383569581717-562428176902-3568c10bc4778439cba9ed9efde75e39'
-    TEST_GROUP = '#torch_test_group'
+    SLACK_BOT_TOKEN = os.getenv('BOT_USER_ACCESS_TOKEN', None)
+    TEST_BOT_NAME = os.getenv('TEST_BOT_NAME', '@marx')
+    TEST_GROUP = '#test_bots'
     TIMEOUT = 5
 
-    def __init__(self):
+    def __init__(self, bot_name=TEST_BOT_NAME):
         self.sc = SlackClient(self.SLACK_BOT_TOKEN)
+        self.bot_name = bot_name
 
     def command(self, command_text: str) -> str:
         assert command_text
-        log(log.DEBUG, 'Hubot send: %s', command_text)
         res = self.sc.api_call(
             "chat.postMessage",
             channel=self.TEST_GROUP,
-            text="@hubot {}".format(command_text),
+            text="{bot_name} {command_text}".format(bot_name=self.bot_name, command_text=command_text),
             link_names=True
         )
         assert res['ok']
@@ -33,16 +34,4 @@ class Bot(object):
                 raise TimeoutError()
 
         result_text = messages[0]['text']
-        log(log.DEBUG, 'Hubot recv: %s', result_text)
         return result_text
-
-    def info(self, symbol: str) -> dict:
-        assert symbol
-        res = self.command('info {}'.format(symbol))
-        lines = res[res.index('```') + 3:].rstrip('`')
-        res = dict()
-        for line in lines.split('\n'):
-            fields = line.split()
-            if len(fields) == 3:
-                res[fields[0]] = fields[2]
-        return res

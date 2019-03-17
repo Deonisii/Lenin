@@ -1,10 +1,13 @@
 import unittest
+from .entity.bot import Bot
 
 
-class Bot(unittest.TestCase):
+class TestBot(unittest.TestCase):
 
     def test_ping(self):
-        self.assertEqual(True, True)
+        bot = Bot('@marx')
+        res = bot.command('ping')
+        self.assertEqual(res, 'PONG')
 
 
 if __name__ == '__main__':
