@@ -1,7 +1,18 @@
 {
-    "python.venvPath": "${workspaceFolder}/.venv",
+    "python.venvPath": "${workspaceFolder}\\.venv",
     "python.pythonPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
+    "python.unitTest.cwd": "${workspaceFolder}",
+    "python.unitTest.unittestEnabled": true,
+    "python.unitTest.unittestArgs": [
+        "-v",
+        "-s",
+        ".",
+        "-p",
+        "test_*.py"
+    ],
+    "python.unitTest.pyTestEnabled": false,
+    "python.unitTest.nosetestsEnabled": false
 }

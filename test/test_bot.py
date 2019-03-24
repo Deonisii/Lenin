@@ -1,5 +1,5 @@
 import unittest
-from .entity.bot import Bot
+from test.entity.bot import Bot
 
 
 class TestBot(unittest.TestCase):
@@ -12,7 +12,6 @@ class TestBot(unittest.TestCase):
     def test_1_plus_1(self):
         bot = Bot()
         self.assertEqual(2, int(bot.command('eval 1+1')))
-
 
 
 if __name__ == '__main__':
