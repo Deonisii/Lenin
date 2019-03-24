@@ -2,7 +2,7 @@ from slackclient import SlackClient
 import time
 import os
 
-WAIT_TIME = 1
+WAIT_TIME = 5
 
 
 class Bot(object):
@@ -26,13 +26,11 @@ class Bot(object):
             link_names=True
         )
         assert res['ok'], res
-        messages = None
         init_time = time.time()
         while True:
             time.sleep(WAIT_TIME)
             answer = self.sc.api_call('conversations.history', channel=res['channel'], oldest=res['ts'])
-            print(answer)
-            assert answer['ok']
+            assert answer['ok'], answer
             messages = answer['messages']
             if messages:
                 return messages[0]['text']

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # lenin.action module
+import subprocess
 
 
 def do_action(_: list) -> str:
@@ -18,6 +19,7 @@ def eval_action(args: list) -> str:
     return eval(" ".join(args))
 
 def self_upgrade(_: list) -> str:
+    subprocess.run(['inv', 'upgrade-bot'])
     return 'start upgrade-bot task'
 
 
