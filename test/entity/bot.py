@@ -7,14 +7,13 @@ WAIT_TIME = 1
 
 class Bot(object):
     # Bot User OAuth Access Token
-    SLACK_BOT_TOKEN = 'xoxp-56358677287-56354407024-565676558451-55d220a3b3082b4fe07fc473821b81bc'
+    SLACK_BOT_TOKEN = os.environ['BOT_ACCESS_TOKEN']
     TEST_BOT_NAME = os.getenv('TEST_BOT_NAME', '@marx')
     TEST_GROUP = '#test_bots'
     TIMEOUT = 10*60
 
     def __init__(self, bot_name=TEST_BOT_NAME):
         print('SLACK_BOT_TOKEN', self.SLACK_BOT_TOKEN)
-        print()
         self.sc = SlackClient(self.SLACK_BOT_TOKEN)
         self.bot_name = bot_name
 
