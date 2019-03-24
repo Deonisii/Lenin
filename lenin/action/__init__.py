@@ -9,8 +9,8 @@ def ping_action(_: list) -> str:
     return 'PONG'
 
 
-def hello_action(_: list) -> str:
-    return 'Hi :)'
+def hello_action(worlds: list) -> str:
+    return 'Bot приветствует тебя!'
 
 
 def eval_action(args: list) -> str:
@@ -23,3 +23,13 @@ ALL = {
     'hello': hello_action,
     'eval': eval_action
 }
+
+for greeting in (
+    'hi',
+    'привет',
+    'shalom',
+    'salam',
+    'hey',
+    'good'
+):
+    ALL[greeting] = hello_action
