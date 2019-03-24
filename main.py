@@ -4,6 +4,9 @@ import re
 from slackclient import SlackClient
 from lenin.action import ALL as COMMAND
 
+__path, _ = os.path.split(__file__)
+PATH_TO_PID_FILE = os.path.join(__path, '.pid')
+
 is_good_env = os.getenv('LENIN_PROJECT', None)
 if is_good_env is None:
     raise EnvironmentError('Please define environment variables:\n\tLENIN_PROJECT\n\tBOT_ACCESS_TOKEN\n'
@@ -77,14 +80,18 @@ def handle_command(cmd, channel):
 
 
 if __name__ == "__main__":
+    with open(PATH_TO_PID_FILE, 'w') as pid_file:
+        pid_file.write('{}'.format(os.getpid()))
     if slack_client.rtm_connect(with_team_state=False):
         print("Starter Bot connected and running!")
         # Read bot's user ID by calling Web API method `auth.test`
         starter_bot_id = slack_client.api_call("auth.test")["user_id"]
-        while True:
+        while os.path.exists(PATH_TO_PID_FILE):
             command, channel = parse_bot_commands(slack_client.rtm_read())
             if command:
                 handle_command(command, channel)
             time.sleep(RTM_READ_DELAY)
     else:
         print("Connection failed. Exception traceback printed above.")
+
+    os.remove(PATH_TO_PID_FILE)
